@@ -1,102 +1,101 @@
-
 #include <stdio.h>
-#include <stdlib.h>
+#include <limits.h>
 
-void merge(int a[], int beg, int mid, int end) {
+void merge(int arr[], int l, int m, int r) {
     int i, j, k;
-    int n1 = mid - beg + 1;
-    int n2 = end - mid;
+    int n1 = m - l + 1;
+    int n2 = r - m;
 
-    int *LeftArray = (int *)malloc(n1 * sizeof(int)); 
-    int *RightArray = (int *)malloc(n2 * sizeof(int));
+    
+    int L[n1], R[n2];
 
     for (i = 0; i < n1; i++)
-        LeftArray[i] = a[beg + i];
+        L[i] = arr[l + i];
     for (j = 0; j < n2; j++)
-        RightArray[j] = a[mid + 1 + j];
+        R[j] = arr[m + 1 + j];
 
+    
     i = 0; 
     j = 0; 
-    k = beg; 
-
+    k = l; 
     while (i < n1 && j < n2) {
-        if (LeftArray[i] <= RightArray[j]) {
-            a[k] = LeftArray[i];
+        if (L[i] <= R[j]) {
+            arr[k] = L[i];
             i++;
         } else {
-            a[k] = RightArray[j];
+            arr[k] = R[j];
             j++;
         }
         k++;
     }
 
     while (i < n1) {
-        a[k] = LeftArray[i];
+        arr[k] = L[i];
         i++;
         k++;
     }
 
     while (j < n2) {
-        a[k] = RightArray[j];
+        arr[k] = R[j];
         j++;
         k++;
     }
-
-    free(LeftArray);
-    free(RightArray);
 }
 
-void mergeSort(int a[], int beg, int end) {
-    if (beg < end) {
-        int mid = (beg + end) / 2;
-        mergeSort(a, beg, mid);
-        mergeSort(a, mid + 1, end);
-        merge(a, beg, mid, end);
+void mergeSort(int arr[], int l, int r) {
+    if (l < r) {
+        int m = l + (r - l) / 2;
+
+        mergeSort(arr, l, m);
+        mergeSort(arr, m + 1, r);
+
+        merge(arr, l, m, r);
     }
 }
 
-void selectionSort(int a[], int n) {
-    int i, j, min_idx, temp;
+void selectionSort(int arr[], int n) {
+    int i, j, min_idx;
 
     for (i = 0; i < n - 1; i++) {
         min_idx = i;
-        for (j = i + 1; j < n; j++) {
-            if (a[j] < a[min_idx]) {
+        for (j = i + 1; j < n; j++)
+            if (arr[j] < arr[min_idx])
                 min_idx = j;
-            }
-        }
 
         if (min_idx != i) {
-            temp = a[i];
-            a[i] = a[min_idx];
-            a[min_idx] = temp;
+            int temp = arr[i];
+            arr[i] = arr[min_idx];
+            arr[min_idx] = temp;
         }
     }
 }
 
-void printArray(int a[], int n) {
-    for (int i = 0; i < n; i++) {
-        printf("%d ", a[i]);
-    }
+void printArray(int A[], int size) {
+    for (int i = 0; i < size; ++i)
+        printf("%d ", A[i]);
     printf("\n");
 }
 
+
+
 int main() {
+    int arr[10]; 
     int n, choice;
 
-    printf("Enter the size of the array: ");
+    printf("Enter the size of the array (max 10): ");
     scanf("%d", &n);
 
-    int *a = (int *)malloc(n * sizeof(int));
-    if (a == NULL) {
-        printf("Memory allocation failed!\n");
+    if (n <= 0 || n > 10) {
+        printf("Invalid array size.\n");
         return 1;
     }
 
     printf("Enter %d elements: ", n);
     for (int i = 0; i < n; i++) {
-        scanf("%d", &a[i]);
+        scanf("%d", &arr[i]);
     }
+
+    printf("\nChoose sorting algorithm:\n");
     printf("1. Merge Sort\n");
     printf("2. Selection Sort\n");
     printf("Enter your choice: ");
@@ -104,15 +103,11 @@ int main() {
 
     switch (choice) {
         case 1:
-        printf("Before Sorting:\n");
-        printArray(a,n);
-            mergeSort(a, 0, n - 1);
+            mergeSort(arr, 0, n - 1);
             printf("After Merge Sort, array elements are:\n");
             break;
         case 2:
-        printf("Before Sorting:\n");
-        printArray(a,n);
-            selectionSort(a, n);
+            selectionSort(arr, n);
             printf("After Selection Sort, array elements are:\n");
             break;
         default:
@@ -120,8 +115,7 @@ int main() {
             return 1;
     }
 
-    printArray(a, n);
+    printArray(arr, n);
 
-    free(a);
     return 0;
 }
